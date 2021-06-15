@@ -17,7 +17,6 @@ import math
 import plotly.figure_factory as ff
 
 
-
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 application = app.server
 app.title = 'Creating an ARIMA model in Dash'
