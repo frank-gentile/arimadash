@@ -1,4 +1,4 @@
-#%%
+# -*- coding: utf-8 -*-
 from fredapi import Fred
 import pandas as pd # Library that manages dataframes
 from statsmodels.tsa.arima.model import ARIMA
@@ -58,14 +58,12 @@ app.layout = html.Div([
         used as a starting place for those first learning about [ARIMA models](https://en.wikipedia.org/wiki/Autoregressive_integrated_moving_average), or how to get started. ARIMA 
         stands for Autoregressive (AR), Integrated (I), Moving Average (MA) model. But what does that mean?
         Autoregressive models generally use past behavior to predict future behavior, Moving Average models use past random error terms to predict future 
-        error terms, and Integrated refers to a series that is differenced. To “difference” is to take an observation and subtract the previous observation from it, or y(t) - y(t-1).
-        This is done to detrend, or transform a nonstationary series 
-        into a stationary one. In general, stationary models are easier to predict since by definition, observations revert back to the mean. Surprisingly, 
+        error terms, and Integrated refers to a series that is differenced. To difference is to take an observation and subtract the previous observation from it, or y(t) - y(t-1).
+        This is done to detrend, or transform a nonstationary series into a stationary one. In general, stationary models are easier to predict since by definition, observations revert back to the mean. Surprisingly, 
         a simple ARIMA model doesn't do too bad of a job predicting inflation, and has been used before in various studies [(Meyler et al 1998)](https://www.researchgate.net/publication/23543270_Forecasting_irish_inflation_using_ARIMA_models), 
         [(Kuhe et al 2016)](https://www.researchgate.net/publication/337673205_Modeling_and_Forecasting_CPI_Inflation_in_Nigeria_Application_of_Autoregressive_Integrated_Moving_Average_Homoskedastic_Model), 
         [(Junttila 2001)](https://econpapers.repec.org/article/eeeintfor/v_3a17_3ay_3a2001_3ai_3a2_3ap_3a203-230.htm). The approach taken here follows [Box Jenkins method](https://en.wikipedia.org/wiki/Box–Jenkins_method), 
-        and as such it's necessary that the series is 
-        stationary before continuing. Feel free to interact and crete your model!'''
+        and as such it's necessary that the series is stationary before continuing. Feel free to interact and crete your model!'''
     ),width=11,align='center'),align='center',justify='center'),
     dbc.Row([
         dbc.Col(
@@ -314,7 +312,7 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
 
     return fig, container,fig2
 # ------------------------------------------------------------------------------
-#if __name__ == '__main__':
-#    app.run_server(debug=True)
+if __name__ == '__main__':
+    app.run_server(debug=True)
 
 # %%
