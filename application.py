@@ -312,7 +312,7 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
 
     return fig, container,fig2
 # ------------------------------------------------------------------------------
-#if __name__ == '__main__':
- #   app.run_server(debug=True)
+if __name__ == '__main__':
+    app.run_server(debug=True)
 
 # %%
