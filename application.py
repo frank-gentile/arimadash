@@ -189,7 +189,7 @@ def update_acf_graph(n_clicks,option_slctd,diff_slctd,start_date,end_date):
     if option_slctd == 'CPI':
         tag = 'CPIAUCSL'
         df = pd.Series(fred.get_series(tag).dropna(),name='CPI')
-    elif option_slcted == 'ETH':
+    elif option_slctd == 'ETH':
         tag = 'CBETHUSD'
         df = pd.Series(fred.get_series(tag,frequency='w').dropna(),name='ETH')
     
@@ -291,7 +291,7 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
     if option_slctd == 'CPI':
         tag = 'CPIAUCSL'
         df = pd.Series(fred.get_series(tag).dropna(),name='CPI')
-    elif option_slcted == 'ETH':
+    elif option_slctd == 'ETH':
         tag = 'CBETHUSD'
         df = pd.Series(fred.get_series(tag,frequency='w').dropna(),name='ETH')
     
@@ -303,8 +303,8 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
     train, test = df[0:size], df[size:]
     pred, residuals = CreatePredictions(int(p_slctd),int(q_slctd),int(diff_slctd),test,train)
 
-    D1 = go.Scatter(x=train.index,y=train['CPI'],name = 'Train Actual') # Training actuals
-    D2 = go.Scatter(x=test.index,y=test['CPI'],name = 'Test Actual') # Testing actuals
+    D1 = go.Scatter(x=train.index,y=train[option_slctd],name = 'Train Actual') # Training actuals
+    D2 = go.Scatter(x=test.index,y=test[option_slctd],name = 'Test Actual') # Testing actuals
     D3 = go.Scatter(x=pred.index,y=pred[0],name = 'Prediction') # Testing predction
 
     # Combine in an object  
@@ -312,7 +312,7 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
             'layout': {
                 'xaxis' :{'title': 'Date'},
                 'yaxis' :{'title': tag},
-                'title' : "CPI"
+                'title' : option_slctd
             }}
     fig = go.Figure(line)
     fig.update_layout(height=500)
