@@ -22,28 +22,21 @@ application = app.server
 app.title = 'Creating an ARIMA model in Dash'
 def CreatePredictions(p,q,d,test,train):
     predictions = list()
-    for t in range(len(test)):
+    for t in range(len(test)+1):
         model = ARIMA(train, order=(p,q,d))
         model_fit = model.fit()
         output = model_fit.forecast()
         residuals = pd.DataFrame(model_fit.resid)
         yhat = output.iloc[0]
         predictions.append(yhat)
-        obs = test.iloc[t]
-        train = train.append(obs)
-    pred = pd.DataFrame(predictions,index=test.index)
+        try:
+            obs = test.iloc[t]
+            train = train.append(obs)
+        except:
+            pass
+    pred = pd.DataFrame(predictions,index=test.index.union([test.index.shift(1)[-1]]))
     residuals = residuals.iloc[1:]
     return pred, residuals
-
-def JoinPredictions(test,train):
-    frames = pd.DataFrame()
-    for p in range(3):
-        for q in range(3):
-            for d in range(3):
-                pred = CreatePredictions(p,q,d,test,train)
-                frames = frames.append(pred)
-    return frames
-   
 
 # %%
  #Dashboard starts here
