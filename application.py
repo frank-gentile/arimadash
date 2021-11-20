@@ -70,7 +70,8 @@ app.layout = html.Div([
             html.Div([
                 dcc.Dropdown(id="slct_dataset",
                         options=[
-                            {"label": "CPI", "value": "CPI"}],
+                            {"label": "CPI", "value": "CPI"},
+                            {'label':'ETH','value':'ETH'}],
                         multi=False,
                         value="CPI",
                         style={'width': "60%"}
@@ -184,10 +185,15 @@ def update_acf_graph(n_clicks,option_slctd,diff_slctd,start_date,end_date):
     #d = "d={}".format(diff_slctd)
 #   date_range =  state_date={} end_date={}.format(start_date,end_date)
 #update this to take the difference in months rather than calling API
-    tag = 'CPIAUCSL'
     fred = Fred(api_key = '13a856ab4d9b2976146eb2e1fddd511d')
-    pi = pd.Series(fred.get_series(tag).dropna(),name='CPI')
-    df = pd.DataFrame(pi).dropna()
+    if option_slctd == 'CPI':
+        tag = 'CPIAUCSL'
+        df = pd.Series(fred.get_series(tag).dropna(),name='CPI')
+    elif option_slcted == 'ETH':
+        tag = 'CBETHUSD'
+        df = pd.Series(fred.get_series(tag,frequency='w').dropna(),name='ETH')
+    
+    df = pd.DataFrame(df).dropna()
     df.index = pd.DatetimeIndex(df.index.values,freq=df.index.inferred_freq)
     df=df[df.index>start_date]
     df=df[df.index<end_date]
