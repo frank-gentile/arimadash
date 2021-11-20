@@ -18,7 +18,6 @@ dash-table==4.11.3
 DateTime==4.3
 decorator==4.4.2
 dict-toolbox==2
-espn-api==0.13.0
 Flask==1.1.2
 Flask-Compress==1.9.0
 fred==3.1
