@@ -148,7 +148,7 @@ app.layout = html.Div([
                      ),width={'size':5})],align='center'),
     html.Br(),
     dbc.Row(dbc.Col(dcc.Markdown('''Thanks for reading! If you want to contact me with questions or comments 
-        you can do so at [frank.gentile@kcl.ac.uk](mailto:frank.gentile@kcl.ac.uk)'''),width=11,align='center'),align='center',justify='center'),
+        you can do so at [frank.gentile@kcl.ac.uk](mailto:franky.gentile@gmail.com)'''),width=11,align='center'),align='center',justify='center'),
 
     html.Br(),
     html.Br()
