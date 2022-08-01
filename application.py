@@ -11,6 +11,7 @@ import dash  # (version 1.12.0) pip install dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import dash_loading_spinners as dls
 from dash.dependencies import Input, Output, State
 import math
 import plotly.figure_factory as ff
@@ -84,7 +85,11 @@ app.layout = html.Div([
     dbc.Row(dbc.Col(dbc.Button('Update', id='submit-val', n_clicks=0,color='primary'),width=11,align='center'),align='center',justify='center'),
 
                 
-    dbc.Row(dbc.Col(dcc.Graph(id='Data_Graph',figure={}))),
+    dbc.Row(dbc.Col(dls.Hash(dcc.Graph(id='Data_Graph',figure={}),
+                        color="#435278",
+                        speed_multiplier=2,
+                        size=100,
+                    ))),
     dbc.Row([
         dbc.Col(html.H5([
             html.Div(id='ADF',children=[]),
@@ -100,7 +105,7 @@ app.layout = html.Div([
         series are much more difficult to forecast, since observations can diverge from the mean. 
         In the test, a more negative critical value gives a higher 
         confidence level in the rejection of the null of non-stationarity.
-        So if the test stat more negative than the critical value we conclude the series is stationary.
+        So if the test stat is more negative than the critical value we conclude the series is stationary.
         However, we don't want the model to lose predictive power by differencing too many times [(Cochrane 2018)](https://static1.squarespace.com/static/5e6033a4ea02d801f37e15bb/t/5ee12618da7ad1571d6a9ce7/1591813656542/overdifferencing.pdf)
         so you should only difference as many times as is necessary to pass the tests.'''),width=6,align='center'),
         dbc.Col(dcc.Markdown('''There exists a problem with the ADF test in that if a series is borderline between stationary
@@ -134,7 +139,11 @@ app.layout = html.Div([
     html.Br(),
     html.Div(id='output_container2', children=[])],width=11),align='center',justify='center'),
     html.Br(),
-    dbc.Row(dbc.Col([dcc.Graph(id='Prediction_Graph', figure={})],width={'size':12}),align='center'),
+    dbc.Row(dbc.Col([dls.Hash(dcc.Graph(id='Prediction_Graph', figure={}),
+                        color="#435278",
+                        speed_multiplier=2,
+                        size=100,
+                    )],width={'size':12}),align='center'),
     dbc.Row([dbc.Col(dcc.Graph(id='Residuals_Graph', figure={}),width=6),
             dbc.Col(dcc.Markdown('''Lastly, we want to make sure that errors are distributed normally. 
                      Typically, we would perform a [Jarque Bera](https://en.wikipedia.org/wiki/Jarque–Bera_test)
