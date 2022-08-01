@@ -10,9 +10,9 @@ import threading
 import warnings
 from copy import copy
 from contextlib import contextmanager
+from pathlib import Path
 
-import retrying
-from six import string_types
+import tenacity
 
 import _plotly_utils.utils
 import plotly
@@ -76,7 +76,7 @@ def validate_coerce_format(fmt):
         return None
 
     # Check format type
-    if not isinstance(fmt, string_types) or not fmt:
+    if not isinstance(fmt, str) or not fmt:
         raise_format_value_error(fmt)
 
     # Make lower case
@@ -490,7 +490,7 @@ The port property must be an integer, but received value of type {typ}.
         if val is None:
             self._props.pop("executable", None)
         else:
-            if not isinstance(val, string_types):
+            if not isinstance(val, str):
                 raise ValueError(
                     """
 The executable property must be a string, but received value of type {typ}.
@@ -498,7 +498,7 @@ The executable property must be a string, but received value of type {typ}.
                         typ=type(val), val=val
                     )
                 )
-            if isinstance(val, string_types):
+            if isinstance(val, str):
                 val = [val]
             self._props["executable_list"] = val
 
@@ -684,7 +684,7 @@ The default_scale property must be a number, but received value of type {typ}.
         if val is None:
             self._props.pop("topojson", None)
         else:
-            if not isinstance(val, string_types):
+            if not isinstance(val, str):
                 raise ValueError(
                     """
 The topojson property must be a string, but received value of type {typ}.
@@ -717,7 +717,7 @@ The topojson property must be a string, but received value of type {typ}.
         if val is None:
             self._props.pop("mathjax", None)
         else:
-            if not isinstance(val, string_types):
+            if not isinstance(val, str):
                 raise ValueError(
                     """
 The mathjax property must be a string, but received value of type {typ}.
@@ -747,7 +747,7 @@ The mathjax property must be a string, but received value of type {typ}.
         if val is None:
             self._props.pop("mapbox_access_token", None)
         else:
-            if not isinstance(val, string_types):
+            if not isinstance(val, str):
                 raise ValueError(
                     """
 The mapbox_access_token property must be a string, \
@@ -1173,11 +1173,11 @@ as follows:
 
     >>> import plotly.io as pio
     >>> pio.orca.config.use_xvfb = True
-    
+
 You can save this configuration for use in future sessions as follows:
 
-    >>> pio.orca.config.save() 
-    
+    >>> pio.orca.config.save()
+
 See https://www.x.org/releases/X11R7.6/doc/man/man1/Xvfb.1.xhtml
 for more info on Xvfb
 """
@@ -1451,13 +1451,17 @@ Install using conda:
                 orca_state["shutdown_timer"] = t
 
 
-@retrying.retry(wait_random_min=5, wait_random_max=10, stop_max_delay=60000)
+@tenacity.retry(
+    wait=tenacity.wait_random(min=5, max=10),
+    stop=tenacity.stop_after_delay(60000),
+)
 def request_image_with_retrying(**kwargs):
     """
     Helper method to perform an image request to a running orca server process
     with retrying logic.
     """
     from requests import post
+    from plotly.io.json import to_json_plotly
 
     if config.server_url:
         server_url = config.server_url
@@ -1467,7 +1471,7 @@ def request_image_with_retrying(**kwargs):
         )
 
     request_params = {k: v for k, v, in kwargs.items() if v is not None}
-    json_str = json.dumps(request_params, cls=_plotly_utils.utils.PlotlyJSONEncoder)
+    json_str = to_json_plotly(request_params)
     response = post(server_url + "/", data=json_str)
 
     if response.status_code == 522:
@@ -1693,7 +1697,7 @@ def write_image(
 
     file: str or writeable
         A string representing a local file path or a writeable object
-        (e.g. an open file descriptor)
+        (e.g. a pathlib.Path object or an open file descriptor)
 
     format: str or None
         The desired image format. One of
@@ -1739,16 +1743,25 @@ def write_image(
     None
     """
 
-    # Check if file is a string
-    # -------------------------
-    file_is_str = isinstance(file, string_types)
+    # Try to cast `file` as a pathlib object `path`.
+    # ----------------------------------------------
+    if isinstance(file, str):
+        # Use the standard Path constructor to make a pathlib object.
+        path = Path(file)
+    elif isinstance(file, Path):
+        # `file` is already a Path object.
+        path = file
+    else:
+        # We could not make a Path object out of file. Either `file` is an open file
+        # descriptor with a `write()` method or it's an invalid object.
+        path = None
 
     # Infer format if not specified
     # -----------------------------
-    if file_is_str and format is None:
-        _, ext = os.path.splitext(file)
+    if path is not None and format is None:
+        ext = path.suffix
         if ext:
-            format = validate_coerce_format(ext)
+            format = ext.lstrip(".")
         else:
             raise ValueError(
                 """
@@ -1772,8 +1785,22 @@ For example:
 
     # Open file
     # ---------
-    if file_is_str:
-        with open(file, "wb") as f:
-            f.write(img_data)
+    if path is None:
+        # We previously failed to make sense of `file` as a pathlib object.
+        # Attempt to write to `file` as an open file descriptor.
+        try:
+            file.write(img_data)
+            return
+        except AttributeError:
+            pass
+        raise ValueError(
+            """
+The 'file' argument '{file}' is not a string, pathlib.Path object, or file descriptor.
+""".format(
+                file=file
+            )
+        )
     else:
-        file.write(img_data)
+        # We previously succeeded in interpreting `file` as a pathlib object.
+        # Now we can use `write_bytes()`.
+        path.write_bytes(img_data)
