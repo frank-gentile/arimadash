@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from fredapi import Fred
 import pandas as pd # Library that manages dataframes
 from statsmodels.tsa.arima.model import ARIMA
 from pandas import datetime
@@ -147,7 +146,7 @@ app.layout = html.Div([
                      consider a log transformation, but this might vary depending on the data.'''
                      ),width={'size':5})],align='center'),
     html.Br(),
-    dbc.Row(dbc.Col(dcc.Markdown('''Thanks for reading! If you want to contact me with questions or comments 
+    dbc.Row(dbc.Col(dcc.Markdown('''Thanks for reading! If you enjoyed this work, feel free to contribute @Frunk-Economics on Venmo, and if you want to contact me with questions or comments 
         you can do so at [franky.gentile@gmail.com](mailto:franky.gentile@gmail.com)'''),width=11,align='center'),align='center',justify='center'),
 
     html.Br(),
@@ -178,16 +177,18 @@ def update_acf_graph(n_clicks,option_slctd,diff_slctd,start_date,end_date):
     #d = "d={}".format(diff_slctd)
 #   date_range =  state_date={} end_date={}.format(start_date,end_date)
 #update this to take the difference in months rather than calling API
-    fred = Fred(api_key = '13a856ab4d9b2976146eb2e1fddd511d')
-    if option_slctd == 'CPI':
-        tag = 'CPIAUCSL'
-        df = pd.Series(fred.get_series(tag).dropna(),name='CPI')
-    elif option_slctd == 'ETH':
-        tag = 'CBETHUSD'
-        df = pd.Series(fred.get_series(tag,frequency='w').dropna(),name='ETH')
+    data = pd.read_csv('data.csv')
+    data = data.set_index('Date')
+    df = data[option_slctd]
+    # if option_slctd == 'CPI':
+    #     tag = 'CPIAUCSL'
+    #     df = pd.Series(fred.get_series(tag).dropna(),name='CPI')
+    # elif option_slctd == 'ETH':
+    #     tag = 'CBETHUSD'
+    #     df = pd.Series(fred.get_series(tag,frequency='w').dropna(),name='ETH')
     
     df = pd.DataFrame(df).dropna()
-    df.index = pd.DatetimeIndex(df.index.values,freq=df.index.inferred_freq)
+    df.index = pd.DatetimeIndex(df.index.values)
     df=df[df.index>start_date]
     df=df[df.index<end_date]
     size = int(len(df) * 0.75)
@@ -280,16 +281,22 @@ def update_acf_graph(n_clicks,option_slctd,diff_slctd,start_date,end_date):
 def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_date,end_date):
     container = "d={} p={} q={} state_date={} end_date={}".format(diff_slctd,p_slctd,q_slctd,start_date,end_date)
 
-    fred = Fred(api_key = '13a856ab4d9b2976146eb2e1fddd511d')
-    if option_slctd == 'CPI':
-        tag = 'CPIAUCSL'
-        df = pd.Series(fred.get_series(tag).dropna(),name='CPI')
-    elif option_slctd == 'ETH':
-        tag = 'CBETHUSD'
-        df = pd.Series(fred.get_series(tag,frequency='w').dropna(),name='ETH')
+    data = pd.read_csv('data.csv')
+    data = data.set_index('Date')
+    df = data[option_slctd]
+    # if option_slctd == 'CPI':
+    #     tag = 'CPIAUCSL'
+    #     df = pd.Series(fred.get_series(tag).dropna(),name='CPI')
+    # elif option_slctd == 'ETH':
+    #     tag = 'CBETHUSD'
+    #     df = pd.Series(fred.get_series(tag,frequency='w').dropna(),name='ETH')
     
     df = pd.DataFrame(df).dropna()
-    df.index = pd.DatetimeIndex(df.index.values,freq=df.index.inferred_freq)
+    if option_slctd == 'CPI':
+        frq = 'MS'
+    elif option_slctd == 'ETH':
+        frq = 'W-FRI'
+    df.index = pd.DatetimeIndex(df.index.values,freq=frq)
     df=df[df.index>start_date]
     df=df[df.index<end_date]
     size = int(len(df) * 0.75)
@@ -304,7 +311,7 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
     line = {'data': [D1,D2,D3],
             'layout': {
                 'xaxis' :{'title': 'Date'},
-                'yaxis' :{'title': tag},
+                'yaxis' :{'title': option_slctd},
                 'title' : option_slctd
             }}
     fig = go.Figure(line)
