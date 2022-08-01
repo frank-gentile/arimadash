@@ -8,9 +8,10 @@ from statsmodels.graphics.tsaplots import pacf, acf
 from statsmodels.tsa.stattools import adfuller, kpss
 import numpy as np
 import dash  # (version 1.12.0) pip install dash
-import dash_core_components as dcc
-import dash_html_components as html
+# import dash_core_components as dcc
+# import dash_html_components as html
 import dash_bootstrap_components as dbc
+from dash import dcc, html
 import dash_loading_spinners as dls
 from dash.dependencies import Input, Output, State
 import math
@@ -156,7 +157,7 @@ app.layout = html.Div([
                      ),width={'size':5})],align='center'),
     html.Br(),
     dbc.Row(dbc.Col(dcc.Markdown('''Thanks for reading! If you enjoyed this work, feel free to contribute [@Frunk-Economics](https://account.venmo.com/u/Frunk-Economics) on Venmo, and if you want to contact me with questions or comments 
-        you can do so at [franky.gentile@gmail.com](mailto:franky.gentile@gmail.com)'''),width=11,align='center'),align='center',justify='center'),
+        you can do so at [franky.gentile@gmail.com](mailto:franky.gentile@gmail.com)''',link_target="_blank"),width=11,align='center'),align='center',justify='center'),
 
     html.Br(),
     html.Br()
@@ -177,7 +178,7 @@ app.layout = html.Div([
      Output(component_id='Data_Graph',component_property='figure'),
      Output(component_id='KPSS',component_property='children')],
      [Input('submit-val','n_clicks')],
-     state=[State('slct_dataset','value'),
+     [State('slct_dataset','value'),
             State('slct_diff','value'),
             State('my-date-picker-range','start_date'),
             State('my-date-picker-range','end_date')]
@@ -280,7 +281,7 @@ def update_acf_graph(n_clicks,option_slctd,diff_slctd,start_date,end_date):
     Output(component_id='Residuals_Graph',component_property='figure')
     ],
     [Input('button2','n_clicks')],
-     state=[State('slct_dataset','value'),
+     [State('slct_dataset','value'),
             State('slct_diff','value'),
             State('slct_p','value'),
             State('slct_q','value'),
