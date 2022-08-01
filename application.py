@@ -146,7 +146,7 @@ app.layout = html.Div([
                      consider a log transformation, but this might vary depending on the data.'''
                      ),width={'size':5})],align='center'),
     html.Br(),
-    dbc.Row(dbc.Col(dcc.Markdown('''Thanks for reading! If you enjoyed this work, feel free to contribute @Frunk-Economics on Venmo, and if you want to contact me with questions or comments 
+    dbc.Row(dbc.Col(dcc.Markdown('''Thanks for reading! If you enjoyed this work, feel free to contribute [@Frunk-Economics](https://account.venmo.com/u/Frunk-Economics) on Venmo, and if you want to contact me with questions or comments 
         you can do so at [franky.gentile@gmail.com](mailto:franky.gentile@gmail.com)'''),width=11,align='center'),align='center',justify='center'),
 
     html.Br(),
