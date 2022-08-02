@@ -36,7 +36,7 @@ def CreatePredictions(p,q,d,test,train):
         except:
             pass
     pred = pd.DataFrame(predictions,index=test.index.union([test.index.shift(1)[-1]]))
-    residuals = residuals.iloc[1:]
+    residuals = residuals.iloc[q:]
     return pred, residuals
 
 # %%
@@ -57,7 +57,7 @@ app.layout = html.Div([
         a simple ARIMA model doesn't do too bad of a job predicting inflation, and has been used before in various studies [(Meyler et al 1998)](https://www.researchgate.net/publication/23543270_Forecasting_irish_inflation_using_ARIMA_models), 
         [(Kuhe et al 2016)](https://www.researchgate.net/publication/337673205_Modeling_and_Forecasting_CPI_Inflation_in_Nigeria_Application_of_Autoregressive_Integrated_Moving_Average_Homoskedastic_Model), 
         [(Junttila 2001)](https://econpapers.repec.org/article/eeeintfor/v_3a17_3ay_3a2001_3ai_3a2_3ap_3a203-230.htm). The approach taken here follows [Box Jenkins method](https://en.wikipedia.org/wiki/Box–Jenkins_method), 
-        and as such it's necessary that the series is stationary before continuing. Feel free to interact and crete your model!'''
+        and as such it's necessary that the series is stationary before continuing. Feel free to interact and crete your model!''',link_target="_blank"
     ),width=11,align='center'),align='center',justify='center'),
     dbc.Row([
         dbc.Col(
@@ -108,13 +108,13 @@ app.layout = html.Div([
         confidence level in the rejection of the null of non-stationarity.
         So if the test stat is more negative than the critical value we conclude the series is stationary.
         However, we don't want the model to lose predictive power by differencing too many times [(Cochrane 2018)](https://static1.squarespace.com/static/5e6033a4ea02d801f37e15bb/t/5ee12618da7ad1571d6a9ce7/1591813656542/overdifferencing.pdf)
-        so you should only difference as many times as is necessary to pass the tests.'''),width=6,align='center'),
+        so you should only difference as many times as is necessary to pass the tests.''',link_target="_blank"),width=6,align='center'),
         dbc.Col(dcc.Markdown('''There exists a problem with the ADF test in that if a series is borderline between stationary
         and nonstationary, it may give the wrong answer since there is inconclusive evidence. To double check, we can perform a 
         [KPSS test](https://en.wikipedia.org/wiki/KPSS_test) for stationarity. Here, if the test statistic is less than the critical value, there is not enough evidence to reject the null 
         of stationarity, so we cannot conclude that it is not stationary. Here, we expect the series to be stationary and so it should have a large p value, but for this 
         particular test the the p value is bounded from 0.01 to 0.1, so p values might be large, but will return as 0.1 and smaller will return as 0.01. 
-        '''),width={'size':5})],align='center',justify='center'),
+        ''',link_target="_blank"),width={'size':5})],align='center',justify='center'),
     
     html.Br(),
 
@@ -153,7 +153,7 @@ app.layout = html.Div([
                      fewer datapoints than that. Looking at the distribution of residuals, we can see that for the default model the errors look 
                      pretty good, but skewed slightly left. This might be ok if you are comfortable with your model overpredicting more than 
                      it underpredicts, but in general we want our models to have normally distributed errors. To improve the model, we could 
-                     consider a log transformation, but this might vary depending on the data.'''
+                     consider a log transformation, but this might vary depending on the data.''',link_target="_blank"
                      ),width={'size':5})],align='center'),
     html.Br(),
     dbc.Row(dbc.Col(dcc.Markdown('''Thanks for reading! If you enjoyed this work, feel free to contribute [@Frunk-Economics](https://account.venmo.com/u/Frunk-Economics) on Venmo, and if you want to contact me with questions or comments 
@@ -312,6 +312,8 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
     size = int(len(df) * 0.75)
     train, test = df[0:size], df[size:]
     pred, residuals = CreatePredictions(int(p_slctd),int(q_slctd),int(diff_slctd),test,train)
+    err = (pred[0]-test[option_slctd])**2
+    mse = np.mean(err[0]).round(2)
 
     D1 = go.Scatter(x=train.index,y=train[option_slctd],name = 'Train Actual') # Training actuals
     D2 = go.Scatter(x=test.index,y=test[option_slctd],name = 'Test Actual') # Testing actuals
@@ -328,7 +330,7 @@ def create_model_graph(n_clicks,option_slctd,diff_slctd,p_slctd,q_slctd,start_da
     fig.update_layout(height=500)
 
     fig2 = ff.create_distplot([residuals[0].values], ['Residuals'],show_hist=False)
-    fig2.update_layout(xaxis_title='Residual',yaxis_title='KDE Probability Density')
+    fig2.update_layout(xaxis_title='Residual',yaxis_title='KDE Probability Density',title='Mean squared error = '+str(mse))
 
     return fig, container,fig2
 # ------------------------------------------------------------------------------
