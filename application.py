@@ -79,7 +79,7 @@ app.layout = html.Div([
                 min_date_allowed=datetime(1947,1,1),
                 max_date_allowed=datetime.today(),
                 start_date=datetime(2003,1,1),
-                end_date=datetime(2021,1,1)
+                end_date=datetime(2022,11,1)
                 )],align='center',width={'size':3})
     ],align='center',justify='center'),
     html.Br(),
@@ -130,10 +130,10 @@ app.layout = html.Div([
     ),width=11,align='center'),align='center',justify='center'),
     
     dbc.Row(dbc.Col(html.Div([html.Label('Order p='),
-        dcc.Input(id='slct_p',value=2)]),width=11),align='center',justify='center'),
+        dcc.Input(id='slct_p',value=1)]),width=11),align='center',justify='center'),
 
     dbc.Row(dbc.Col(html.Div([html.Label('Order q='),
-        dcc.Input(id='slct_q',value=1)]),width=11),align='center',justify='center'),
+        dcc.Input(id='slct_q',value=2)]),width=11),align='center',justify='center'),
     
     html.Br(),
     dbc.Row(dbc.Col([dbc.Button('Create Model',id='button2',n_clicks=0,color='primary'),
