@@ -124,8 +124,8 @@ app.layout = html.Div([
     
     dbc.Row(dbc.Col(dcc.Markdown(
         ''' The next step is to consider the Autocorrelation and Partial Autocorrelation plots. Here we choose the number of moving average
-        terms (q) based on the ACF plot. The order is equal to the number of lags, typically only the first few, that are outside the 
-        green region (95% confidence interval) indicate the order. Similarly, we consider the PACF for the order (p) of the AR component, or how many 
+        terms (q) based on the PACF plot. The order is equal to the number of lags, typically only the first few, that are outside the 
+        green region (95% confidence interval). Similarly, we consider the ACF for the order (p) of the AR component, or how many 
         AR terms we should include. '''
     ),width=11,align='center'),align='center',justify='center'),
     
